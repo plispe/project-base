@@ -36,13 +36,22 @@ spec:
                             path: default.conf
             initContainers:
                 -   name: copy-source-codes-to-application-folder
-                    image: $PHP_FPM_IMAGE
-                    command: ["sh", "-c", "cp -r /source-code/. /var/www/html"]
+                    # image: $PHP_FPM_IMAGE
+                    image: petrpliska/php-fpm:0.0.4
+                    command: ["sh", "-c", "cp -r /var/www/html/. /tmp/source-codes"]
+                    volumeMounts:
+                    -       name: source-codes
+                            mountPath: /tmp/source-codes
+                -   name: modify-docker-image
+                    # image: $PHP_FPM_IMAGE
+                    image: petrpliska/php-fpm:0.0.4
+                    command: ["sh", "-c", "cd /var/www/html && ./phing db-create build-new db-demo"]
                     volumeMounts:
                     -       name: source-codes
                             mountPath: /var/www/html
             containers:
-            -   image: $PHP_FPM_IMAGE
+            -   image: petrpliska/php-fpm:0.0.4
+            # -   image: $PHP_FPM_IMAGE
                 name: php-fpm
                 securityContext:
                         runAsUser: 82

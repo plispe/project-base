@@ -2,16 +2,26 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
     name: shopsys
+    annotations:
+        kubernetes.io/ingress.class: "nginx"
+        ingress.kubernetes.io/ssl-redirect: "False"
 spec:
+    # tls:
+    #     - hosts:
+    #         - "shopsys.ipex.cloud"
+    #         - "2-shopsys.ipex.cloud"
+    #       secretName: domain-tls
     rules:
-    -   host: $FIRST_DOMAIN_HOSTNAME
+    # -   host: $FIRST_DOMAIN_HOSTNAME
+    -   host: shopsys.ipex.cloud
         http:
             paths:
             -   path: /
                 backend:
                     serviceName: webserver-php-fpm
                     servicePort: 8080
-    -   host: $SECOND_DOMAIN_HOSTNAME
+    # -   host: $SECOND_DOMAIN_HOSTNAME
+    -   host: 2-shopsys.ipex.cloud
         http:
             paths:
             -   path: /
