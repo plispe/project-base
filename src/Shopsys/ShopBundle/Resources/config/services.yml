@@ -50,3 +50,15 @@ services:
     Shopsys\FrameworkBundle\Model\Product\ProductDataFactoryInterface: '@Shopsys\ShopBundle\Model\Product\ProductDataFactory'
 
     Shopsys\FrameworkBundle\Model\Product\Brand\BrandDataFactoryInterface: '@Shopsys\ShopBundle\Model\Product\Brand\BrandDataFactory'
+    
+    shopsys.google_storage_client:
+        class: Google\Cloud\Storage\StorageClient
+        arguments:
+            - projectId: "ipex-test-infra"
+              keyFilePath: "%shopsys.root_dir%/app/config/service-account.json" # optional
+
+    shopsys.google_storage_bucket:
+        class: Google\Cloud\Storage\Bucket
+        factory: 'shopsys.google_storage_client:bucket'
+        arguments:
+            - 'shopsys-test'

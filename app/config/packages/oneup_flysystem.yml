@@ -1,8 +1,9 @@
 oneup_flysystem:
     adapters:
         main_adapter:
-            local:
-                directory: "%kernel.project_dir%"
+            googlecloudstorage:
+                client: shopsys.google_storage_client
+                bucket: shopsys.google_storage_bucket
         local_adapter:
             local:
                 directory: "/"
