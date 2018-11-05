@@ -28,6 +28,12 @@ spec:
             volumes:
                 -   name: source-codes
                     emptyDir: {}
+                -   name: domains-urls
+                    configMap:
+                        name: domains-urls
+                -   name: gcs-service-account
+                    secret:
+                        secretName: gcs-service-account
                 -   name: nginx-configuration
                     configMap:
                         name: nginx-configuration
@@ -59,6 +65,12 @@ spec:
                 volumeMounts:
                     -   name: source-codes
                         mountPath: /var/www/html
+                    -   name: domains-urls
+                        mountPath: /var/www/html/app/config/domains_urls.yml 
+                        subPath: domains_urls.yml
+                    -   name: gcs-service-account
+                        mountPath: /var/www/html/app/config/service-account.json
+                        subPath: service-account.json
             -   image: nginx:1.13.10-alpine
                 name: webserver
                 ports:
