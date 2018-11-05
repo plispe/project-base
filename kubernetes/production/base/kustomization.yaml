@@ -14,3 +14,18 @@ resources:
 - ../../services/webserver-php-fpm.yml
 - ../../deployments/webserver-php-fpm.yml
 - ../../ingress.yml
+
+configMapGenerator:
+- name: nginx-configuration
+  files:
+    - ../../../docker/nginx/nginx.conf
+- name: postgres-configuration
+  files:
+    - ../../../docker/postgres/postgres.conf
+- name: domains-urls
+  files:
+    - ../../../app/config/domains_urls.yml
+secretGenerator:
+- name: gcs-service-account
+  commands:
+    service-account.json: "cat ../../../app/config/service-account.json"
