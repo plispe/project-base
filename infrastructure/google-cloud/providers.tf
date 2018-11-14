@@ -1,5 +1,9 @@
 provider "google" {
   credentials = "${file("service-account.json")}"
-  project     = "shopsys-test-infra"
+  project     = "${var.GOOGLE_CLOUD_PROJECT_ID}"
   region      = "${var.GOOGLE_CLOUD_REGION}"
+}
+
+provider "kubernetes" {
+  host = "https://${google_container_cluster.production-k8s-cluster.endpoint}"
 }
