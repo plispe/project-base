@@ -1,6 +1,1 @@
-domains_urls:
-    -   id: 1
-        url: http://shopsys.ipex.cloud
-
-    -   id: 2
-        url: http://2-shopsys.ipex.cloud
+domains_urls: [{id: 1, url: http://shop.shopsys.local}, {id: 2, url: http://shop2.shopsys.local}]
