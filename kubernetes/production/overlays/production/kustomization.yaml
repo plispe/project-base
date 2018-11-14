@@ -4,8 +4,6 @@ resources:
 # - ./postgres-endpoints.yaml
 # - ./redis-service.yaml
 # - ./redis-endpoints.yaml
-- ../../../deployments/postgres.yml
-- ../../../deployments/redis.yml
 bases:
 - ../../base
 namespace: shopsys-production

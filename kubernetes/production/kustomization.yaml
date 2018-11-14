@@ -1,18 +1,2 @@
 bases:
 - base
-
-# vars:
-#   - name: $(DOMAIN_URL_0)
-#     objref:
-#       kind: Ingress
-#       name: shopsys
-#       apiVersion: extensions/v1beta1
-#     fieldref:
-#       fieldpath: spec.rules[0].host
-#   - name: $(DOMAIN_URL_1)
-#     objref:
-#       kind: Ingress
-#       name: shopsys
-#       apiVersion: extensions/v1beta1
-#     fieldref:
-#       fieldpath: spec.rules[1].host
