@@ -1,24 +1,78 @@
+# Has to be tainted for new suffix. Not optiomal
+resource "random_string" "postgres-name-suffix" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = false
+}
+
 resource "google_sql_database_instance" "postgres" {
-  name = "shopsys-postgres"
+  name             = "shopsys-postgres-${random_string.postgres-name-suffix.result}"
   database_version = "POSTGRES_9_6"
-  region = "${var.GOOGLE_CLOUD_REGION}"
+  region           = "${var.GOOGLE_CLOUD_REGION}"
 
   settings {
     tier = "db-f1-micro"
   }
 }
 
+resource "google_sql_user" "shopsys" {
+  name     = "shopsys"
+  instance = "${google_sql_database_instance.postgres.name}"
+  password = "changeme"
+}
+
+resource "google_sql_database" "shopsys-production" {
+  name      = "shopsys-production"
+  instance  = "${google_sql_database_instance.postgres.name}"
+  charset   = "UTF8"
+  collation = "en_US.UTF8"
+}
+
 resource "google_redis_instance" "redis" {
+  name = "shopsys-redis"
 
-    name                = "shopsys-redis"
+  tier           = "STANDARD_HA"
+  memory_size_gb = 1
 
-    tier                = "STANDARD_HA"
-    memory_size_gb      = 1
+  region                  = "${var.GOOGLE_CLOUD_REGION}"
+  location_id             = "${var.GOOGLE_CLOUD_REGION}-a"
+  alternative_location_id = "${var.GOOGLE_CLOUD_REGION}-b"
 
+  redis_version = "REDIS_3_2"
+}
 
-    region              = "${var.GOOGLE_CLOUD_REGION}"
-    location_id             = "${var.GOOGLE_CLOUD_REGION}-a"
-    alternative_location_id = "${var.GOOGLE_CLOUD_REGION}-b"
+resource "google_storage_bucket" "file-store" {
+  name     = "shopsys-file-store-bucket"
+  location = "EU"
+}
 
-    redis_version       = "REDIS_3_2"
+data "google_service_account" "shopsys-gcs-service-account" {
+  account_id = "shopsys-gcs-service-account"
+}
+
+resource "google_service_account_key" "shopsys-gcs-service-account" {
+  service_account_id = "${data.google_service_account.shopsys-gcs-service-account.name}"
+}
+
+resource "kubernetes_namespace" "shopsys-production" {
+  metadata {
+    name = "shopsys-production"
+  }
+}
+
+resource "kubernetes_secret" "shopsys-gcs-service-account" {
+  metadata {
+    name      = "shopsys-gcs-service-account"
+    namespace = "${kubernetes_namespace.shopsys-production.id}"
+  }
+
+  data {
+    service-account.json = "${base64decode(google_service_account_key.shopsys-gcs-service-account.private_key)}"
+  }
+}
+
+output "shopsys-gcs-service-account-json-key" {
+  value     = "${base64decode(google_service_account_key.shopsys-gcs-service-account.private_key)}"
+  sensitive = true
 }
