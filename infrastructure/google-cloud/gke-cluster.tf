@@ -1,11 +1,12 @@
-data "google_container_engine_versions" "eu-west3" {
+data "google_container_engine_versions" "k8s-versions-available" {
   zone = "${var.GOOGLE_CLOUD_REGION}-a"
 }
+
 resource "google_container_cluster" "production-k8s-cluster" {
   name               = "production-k8s-cluster"
   zone               = "${var.GOOGLE_CLOUD_REGION}-a"
-  min_master_version = "${data.google_container_engine_versions.eu-west3.latest_master_version}"
-  node_version       = "${data.google_container_engine_versions.eu-west3.latest_node_version}"
+  min_master_version = "${data.google_container_engine_versions.k8s-versions-available.latest_master_version}"
+  node_version       = "${data.google_container_engine_versions.k8s-versions-available.latest_node_version}"
   initial_node_count = 3
 
   master_auth {
@@ -27,8 +28,18 @@ resource "google_container_cluster" "production-k8s-cluster" {
     machine_type = "n1-highcpu-4"
   }
 
+  addons_config {
+    http_load_balancing {
+      disabled = true
+    }
+
+    horizontal_pod_autoscaling {
+      disabled = true
+    }
+  }
+
   provisioner "local-exec" {
-    command = "gcloud auth activate-service-account terraform@ipex-test-infrastructure.iam.gserviceaccount.com --key-file ./ipex-test-infra.json && gcloud container clusters get-credentials test-infra --zone europe-west3-a --project ipex-test-infrastructure && kubectl create clusterrolebinding cluster-admin-binding --clusterrole cluster-admin --user $(gcloud config get-value account)"
-    interpreter = [ "/bin/bash", "-c"]
+    command     = "gcloud container clusters get-credentials ${google_container_cluster.production-k8s-cluster.name} --zone ${var.GOOGLE_CLOUD_REGION}-a && kubectl create clusterrolebinding cluster-admin-binding --clusterrole cluster-admin --user $(gcloud config get-value account)"
+    interpreter = ["/bin/bash", "-c"]
   }
 }
