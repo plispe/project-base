@@ -1,0 +1,7 @@
+bases:
+- ../../base
+resources:
+- ../../../deployments/postgres.yml
+- ../../../deployments/redis.yml
+- ./namespace.yaml
+namespace: shopsys-ci
