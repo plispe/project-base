@@ -24,7 +24,3 @@ configMapGenerator:
 - name: domains-urls
   files:
   - ../../../app/config/domains_urls.yml
-secretGenerator:
-- name: gcs-service-account
-  commands:
-    service-account.json: cd ../../../infrastructure/google-cloud && terraform output shopsys-gcs-service-account-json-key && cd -
