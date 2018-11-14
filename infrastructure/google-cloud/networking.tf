@@ -1,5 +1,5 @@
 resource "google_compute_address" "loadbalancer-ip" {
-  name = "loadbalancer-ip"
+  name   = "loadbalancer-ip"
   region = "${var.GOOGLE_CLOUD_REGION}"
 }
 
