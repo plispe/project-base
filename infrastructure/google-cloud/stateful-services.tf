@@ -47,12 +47,12 @@ resource "google_storage_bucket" "file-store" {
   location = "EU"
 }
 
-data "google_service_account" "shopsys-gcs-service-account" {
-  account_id = "shopsys-gcs-service-account"
+data "google_service_account" "gcs-service-account" {
+  account_id = "gcs-service-account"
 }
 
-resource "google_service_account_key" "shopsys-gcs-service-account" {
-  service_account_id = "${data.google_service_account.shopsys-gcs-service-account.name}"
+resource "google_service_account_key" "gcs-service-account" {
+  service_account_id = "${data.google_service_account.gcs-service-account.name}"
 }
 
 resource "kubernetes_namespace" "shopsys-production" {
@@ -61,18 +61,18 @@ resource "kubernetes_namespace" "shopsys-production" {
   }
 }
 
-resource "kubernetes_secret" "shopsys-gcs-service-account" {
+resource "kubernetes_secret" "gcs-service-account" {
   metadata {
-    name      = "shopsys-gcs-service-account"
+    name      = "gcs-service-account"
     namespace = "${kubernetes_namespace.shopsys-production.id}"
   }
 
   data {
-    service-account.json = "${base64decode(google_service_account_key.shopsys-gcs-service-account.private_key)}"
+    service-account.json = "${base64decode(google_service_account_key.gcs-service-account.private_key)}"
   }
 }
 
-output "shopsys-gcs-service-account-json-key" {
-  value     = "${base64decode(google_service_account_key.shopsys-gcs-service-account.private_key)}"
+output "gcs-service-account-json-key" {
+  value     = "${base64decode(google_service_account_key.gcs-service-account.private_key)}"
   sensitive = true
 }
